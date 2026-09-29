@@ -1,1 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>たまご財団</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+        }
+
+        /* ====================
+           参加画面
+        ==================== */
+
+        #joinScreen {
+            text-align: center;
+            padding-top: 60px;
+        }
+
+        #joinScreen h1 {
+            font-size: 42px;
+            margin-bottom: 40px;
+        }
+
+        input {
+            width: 280px;
+            padding: 14px;
+            margin: 8px;
+            font-size: 17px;
+            border: 1px solid #aaa;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 13px 35px;
+            margin-top: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            background: #222;
+            color: white;
+            cursor: pointer;
+        }
+
+        #error {
+            color: red;
+            margin-top: 15px;
+        }
+
+        /* ====================
+           参加後の画面
+        ==================== */
+
+        #mainScreen {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .content {
+            padding: 40px;
+            margin-right: 300px;
+        }
+
+        .content h1 {
+            font-size: 35px;
+        }
+
+        /* 右側の参加者欄 */
+
+        #memberPanel {
+            position: fixed;
+            right: 0;
+            top: 0;
+
+            width: 300px;
+            height: 100vh;
+
+            background: white;
+            border-left: 2px solid #ddd;
+
+            padding: 20px;
+
+            overflow-y: auto;
+        }
+
+        #memberPanel h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        /* リーダー */
+
+        #leader {
+            padding: 15px;
+            margin-bottom: 15px;
+
+            background: #ffe58a;
+            border-radius: 10px;
+
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* 普通の参加者 */
+
+        .member {
+            padding: 12px;
+            margin-top: 8px;
+
+            background: #f1f1f1;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 600px) {
+
+            #memberPanel {
+                width: 230px;
+            }
+
+            .content {
+                margin-right: 230px;
+                padding: 20px;
+            }
+
+            input {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ====================
+         参加画面
+    ==================== -->
+
+    <div id="joinScreen">
+
+        <h1>🥚 たまご財団</h1>
+
+        <input
+            type="text"
+            id="code"
+            placeholder="コードを入力"
+        >
+
+        <br>
+
+        <input
+            type="text"
+            id="name"
+            placeholder="名前を入力"
+        >
+
+        <br>
+
+        <button onclick="join()">入る</button>
+
+        <div id="error"></div>
+
+    </div>
+
+
+    <!-- ====================
+         参加後の画面
+    ==================== -->
+
+    <div id="mainScreen">
+
+        <div class="content">
+
+            <h1>🥚 たまご財団</h1>
+
+            <h2 id="welcome"></h2>
+
+            <p>
+                たまご財団へようこそ！
+            </p>
+
+        </div>
+
+
+        <!-- 右側の参加者欄 -->
+
+        <div id="memberPanel">
+
+            <h2>参加者</h2>
+
+            <!-- リーダーを一番上に表示 -->
+
+            <div id="leader">
+                👑 リーダー<br>
+                <span id="leaderName"></span>
+            </div>
+
+            <!-- その他の参加者 -->
+
+            <div id="members"></div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        // 参加者
+        let members = [];
+
+        // 入るボタン
+        function join() {
+
+            const code =
+                document.getElementById("code").value.trim();
+
+            const name =
+                document.getElementById("name").value.trim();
+
+            const error =
+                document.getElementById("error");
+
+
+            // コードチェック
+
+            if (code !== "tamagons") {
+
+                error.textContent =
+                    "コードが違います";
+
+                return;
+            }
+
+
+            // 名前チェック
+
+            if (name === "") {
+
+                error.textContent =
+                    "名前を入力してください";
+
+                return;
+            }
+
+
+            // 参加者追加
+
+            members.push(name);
+
+
+            // 最初に入った人をリーダーにする
+
+            if (members.length === 1) {
+
+                document.getElementById("leaderName")
+                    .textContent = name;
+
+            }
+
+
+            // 参加画面を消す
+
+            document.getElementById("joinScreen")
+                .style.display = "none";
+
+
+            // メイン画面を表示
+
+            document.getElementById("mainScreen")
+                .style.display = "block";
+
+
+            // ようこそ表示
+
+            document.getElementById("welcome")
+                .textContent = name + " さん、参加しました！";
+
+
+            // 参加者一覧を表示
+
+            updateMembers();
+
+        }
+
+
+        // 参加者一覧更新
+
+        function updateMembers() {
+
+            const membersDiv =
+                document.getElementById("members");
+
+            membersDiv.innerHTML = "";
+
+
+            // リーダー以外を表示
+
+            for (let i = 1; i < members.length; i++) {
+
+                const div =
+                    document.createElement("div");
+
+                div.className = "member";
+
+                div.textContent =
+                    "👤 " + members[i];
+
+                membersDiv.appendChild(div);
+
+            }
+
+        }
+
+    </script>
+
+</body>
+</html>
